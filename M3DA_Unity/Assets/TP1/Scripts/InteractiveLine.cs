@@ -5,17 +5,13 @@ using UnityEngine;
 public class InteractiveLine : MonoBehaviour {
 
 
-	List<Vector3> positions;
+	List<Vector3> positions = new List<Vector3>();
 	public Color color;
 
 	// Use this for initialization
 	void Start () {
 		LineRenderer renderer = this.gameObject.AddComponent<LineRenderer>();
 		renderer.widthMultiplier = 0.2f;
-		positions = new List<Vector3> ();
-
-		//this.setSegment ();
-		this.setCircle (4);
 	}
 	
 	// Update is called once per frame
@@ -27,12 +23,12 @@ public class InteractiveLine : MonoBehaviour {
 		renderer.material.color = color;
 	}
 
-	void setSegment() {
+	public void setSegment() {
 		positions.Add(new Vector3(-2,0,0));
 		positions.Add(new Vector3(2,0,0));
 	}
 
-	void setCircle(float r) {
+	public void setCircle(float r) {
 		float angle = 0;
 		for (int i = 0; i < 30; i++) {
 			positions.Add (new Vector3 (r*Mathf.Cos(angle), r*Mathf.Sin(angle), 0));

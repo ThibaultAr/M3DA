@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/tp1.unity
+- path: Assets/TP1/tp1.unity
   isLoaded: 1
   isActive: 1
