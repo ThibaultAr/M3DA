@@ -8,6 +8,7 @@ public class Main : MonoBehaviour {
 	public Camera camPersp;
 	public GameObject path;
 	public GameObject section;
+	public InteractiveLine pathLine;
 
 	// Use this for initialization
 	void Start () { 
@@ -27,6 +28,12 @@ public class Main : MonoBehaviour {
 			section.SetActive (true);
 			camPersp.enabled = false;
 			path.SetActive (false);
+		}
+
+		if (Input.GetMouseButtonDown (0)) {
+			Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			pos.z = 0;
+			pathLine.addPosition (pos);
 		}
 	}
 }

@@ -417,6 +417,7 @@ MonoBehaviour:
   camPersp: {fileID: 1460005046}
   path: {fileID: 1773225555}
   section: {fileID: 1120732345}
+  pathLine: {fileID: 1773225556}
 --- !u!4 &1563377381
 Transform:
   m_ObjectHideFlags: 0

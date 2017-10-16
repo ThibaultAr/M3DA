@@ -8,26 +8,30 @@ public class Extrusion : MonoBehaviour {
 	public InteractiveLine path;
 	public InteractiveLine section;
 	private Vector3[] position;
-	private int[] triangle;
 
 	// Use this for initialization
 	void Start () {
 		GetComponent<MeshFilter> ().mesh=mesh=new Mesh(); 
 		mesh.name = "Extrude";
 
+
 		path.setSegment();
 		section.setCircle(1);
-		ExtrudeLine ();
-		initTriangle ();
-
-		mesh.Clear ();
-		mesh.vertices = position;
-		mesh.triangles = triangle;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		ExtrudeLine ();
+	}
+
+	Vector3 tangentLine(int i){
+		List<Vector3> pathPos = path.getPositions ();
+		if (i > 0 && i < pathPos.Count - 1)
+			return pathPos [i - 1] - pathPos [i + 1];
+		else if (i == 0)
+			return pathPos [i] - pathPos [i + 1];
+		else
+			return pathPos [i - 1] - pathPos [i];
 	}
 
 	void ExtrudeLine() {
@@ -37,27 +41,50 @@ public class Extrusion : MonoBehaviour {
 		int index = 0;
 
 		for (int i = 0; i < pathPos.Count; i++) {
+			Quaternion q = Quaternion.FromToRotation (Vector3.up, tangentLine(i));
 			for (int j = 0; j < sectionPos.Count; j++) {
-				position[index] =new Vector3(sectionPos[j].x + pathPos[i].x, sectionPos[j].y + pathPos[i].y, sectionPos[j].z + pathPos[i].z);
+				Vector3 nSec = new Vector3(sectionPos[j].x, 0, sectionPos[j].y);
+				Vector3 nSectionPos = q * nSec;
+				Vector3 pos = nSectionPos + pathPos[i];
+				position [index] = pos;
 				index++;
 			}
 		}
+		initTriangle ();
 	}
 
 	void initTriangle() {
 		List<int> triangles = new List<int> ();
 		int sliceSize = section.getPositions ().Count;
-		Debug.Log (sliceSize);
-		for (int i = 0; i < sliceSize - 1; i++) {
-			triangles.Add (i);
-			triangles.Add (i + 1);
-			triangles.Add (i + sliceSize);
-			triangles.Add (i + 1);
-			triangles.Add (i + sliceSize);
-			triangles.Add (i + sliceSize + 1);
+		int stackSize = path.getPositions ().Count;
+		for (int j = 0; j < stackSize - 1; j++) {
+			for (int i = 0; i < sliceSize - 1; i++) {
+				int bottomLeft = i + j * sliceSize;
+				int bottomRight = (i + 1) + j * sliceSize;
+				int topLeft = bottomLeft + sliceSize;
+				int topRight = bottomRight + sliceSize;
+
+				triangles.Add (topLeft);
+				triangles.Add (bottomLeft);
+				triangles.Add (bottomRight);
+
+				triangles.Add (topLeft);
+				triangles.Add (bottomRight);
+				triangles.Add (bottomLeft);
+
+				triangles.Add (bottomRight);
+				triangles.Add (topRight);
+				triangles.Add (topLeft);
+	
+				triangles.Add (bottomRight);
+				triangles.Add (topLeft);
+				triangles.Add (topRight);
+			}
 		}
 
-		triangle = triangles.ToArray();
+		mesh.Clear ();
+		mesh.vertices = position;
+		mesh.triangles = triangles.ToArray();
 	}
 
 	void OnDrawGizmos() { 
