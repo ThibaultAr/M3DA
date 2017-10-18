@@ -15,8 +15,8 @@ public class Extrusion : MonoBehaviour {
 		mesh.name = "Extrude";
 
 
-		path.setCircle(2);
-		section.setCircle(1);
+		//path.setCircle(2);
+		//section.setCircle(1);
 	}
 	
 	// Update is called once per frame

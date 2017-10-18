@@ -28,9 +28,14 @@ public class InteractiveLine : MonoBehaviour {
 				courbe [i] = PointSpline (i*1.0f/(size-1.0f));
 			}
 		}
-
-		renderer.SetPositions(courbe);
-		renderer.positionCount = size;
+			
+		if (this.gameObject.name == "Path") {
+			renderer.SetPositions (courbe);
+			renderer.positionCount = size;
+		} else {
+			renderer.SetPositions (positions.ToArray());
+			renderer.positionCount = positions.Count;
+		}
 	}
 
 	public void setSegment() {
