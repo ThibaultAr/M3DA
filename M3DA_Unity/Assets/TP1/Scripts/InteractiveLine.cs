@@ -42,8 +42,8 @@ public class InteractiveLine : MonoBehaviour {
 
 	public void setCircle(float r) {
 		positions = new List<Vector3>();
-		float angle = 0;
-		for (int i = 0; i <= 30; i++) {
+		float angle = 0.1f;
+		for (int i = 0; i <= 31; i++) {
 			positions.Add (new Vector3 (r*Mathf.Cos(angle), r*Mathf.Sin(angle), 0));
 			angle += 2*Mathf.PI / 30f;
 		}
