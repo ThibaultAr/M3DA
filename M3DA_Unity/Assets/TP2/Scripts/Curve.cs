@@ -29,15 +29,15 @@ public class Curve : MonoBehaviour {
 	double StartInterval() {
 		double res = 0.0;
 
-		// TODO : start value of the definition of the curve
+        res = basis.knot[basis.degree];
 
-		return res;
+        return res;
 	}
 
 	double EndInterval() {
 		double res = -1.0; // hack to avoid a green dot if TODO are not done.
 
-		// TODO : end value of the definition of the curve
+		res = basis.knot[basis.knot.Count - 1];
 
 		return res;
 	}
@@ -64,7 +64,10 @@ public class Curve : MonoBehaviour {
 	Vector3 PointCurve(double u) {
 		Vector3 result = Vector3.zero;
 
-		// TODO : compute the point of the curve at u
+		for(int k = 0; k < basis.knot.Count; k++)
+        {
+            result += (float)basis.EvalNkp(k, basis.degree, u) * position[k];
+        }
 
 		return result; // * 1.0f / (float)w;
 	}

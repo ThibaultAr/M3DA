@@ -31,9 +31,9 @@ public class Basis: MonoBehaviour {
 		List<Vector3> res=new List<Vector3>();
 	    	
 		for (int i = 0; i < nbPoint; i++) {
-			double t = (double)i / nbPoint;
+            double t = (double)i / (nbPoint -1);
 			float nkp = (float)EvalNkp (k, degree, t);
-			//if( nkp !=0)
+			//if( nkp != 0.0f)
 				res.Add(new Vector3 ((float) t, nkp, 0));
 		}
 
