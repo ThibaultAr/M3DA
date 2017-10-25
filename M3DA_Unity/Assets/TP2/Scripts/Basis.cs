@@ -46,8 +46,17 @@ public class Basis: MonoBehaviour {
 	public double EvalNkp(int k,int p,double t) {
 		double res = 0.0;
 
-		if(p > 0)
-			res = ((t - knot [k]) / (knot [k + p] - knot [k])) * EvalNkp (k, p - 1, t) + ((knot [p + k + 1] - t) / (knot [k + p + 1] - knot [k + 1])) * EvalNkp (k + 1, p - 1, t);
+		if (p > 0) {
+			double evalm1 = ((t - knot [k]) / (knot [k + p] - knot [k])) * EvalNkp (k, p - 1, t);
+			double eval1 = ((knot [p + k + 1] - t) / (knot [k + p + 1] - knot [k + 1])) * EvalNkp (k + 1, p - 1, t);
+
+			if ((knot [k + p] - knot [k]) == 0)
+				evalm1 = 0;
+			if ((knot [k + p + 1] - knot [k + 1]) == 0)
+				eval1 = 0;
+
+			res = evalm1 + eval1;
+		}
 		else if (t >= knot[k] && t < knot[k+1])
 			res = 1;
 
