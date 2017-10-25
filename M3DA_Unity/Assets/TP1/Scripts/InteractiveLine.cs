@@ -62,6 +62,20 @@ public class InteractiveLine : MonoBehaviour {
 		positions.Add (pos);
 	}
 
+	public Vector3 Normale(int i) {
+		Vector3 p1;
+		Vector3 p2;
+		p1 = positions [i];
+		if (i < positions.Count - 1)
+			p2 = positions [i + 1];
+		else
+			p2 = positions [i - 1];
+
+		Vector3 l = p2 - p1;
+
+		return new Vector3 (-l.y, l.x, 0);
+	}
+
 	public Vector3 tangentLine(int i) {
 		List<Vector3> pathPos = this.getPositions ();
 		if (i > 0 && i < pathPos.Count - 1)
@@ -104,7 +118,11 @@ public class InteractiveLine : MonoBehaviour {
 
 			float t = (tNormalized - ((float)i / (count - 1.0f))) * (count - 1.0f);
 
-			return t * t * (2 * p0 - 2 * p1 + t0 + t1) +  t * (-3 * p0 + 3 * p1 - 2 * t0 - t1) + t0;
+			return 3 * t * t * (2 * p0 - 2 * p1 + t0 + t1) +  2 * t * (-3 * p0 + 3 * p1 - 2 * t0 - t1) + t0;
 		}
+	}
+
+	public void clearPositions() {
+		this.positions = new List<Vector3>();
 	}
 }
