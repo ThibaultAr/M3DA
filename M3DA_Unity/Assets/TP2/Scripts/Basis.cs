@@ -33,8 +33,8 @@ public class Basis: MonoBehaviour {
 		for (int i = 0; i < nbPoint; i++) {
             double t = (double)i / (nbPoint -1);
 			float nkp = (float)EvalNkp (k, degree, t);
-			//if( nkp != 0.0f)
-				res.Add(new Vector3 ((float) t, nkp, 0));
+
+			res.Add(new Vector3 ((float) t, nkp, 0));
 		}
 
 		return res;		
@@ -46,19 +46,29 @@ public class Basis: MonoBehaviour {
 	public double EvalNkp(int k,int p,double t) {
 		double res = 0.0;
 
-		if (p > 0) {
-			double evalm1 = ((t - knot [k]) / (knot [k + p] - knot [k])) * EvalNkp (k, p - 1, t);
-			double eval1 = ((knot [p + k + 1] - t) / (knot [k + p + 1] - knot [k + 1])) * EvalNkp (k + 1, p - 1, t);
+		if (p == 0) {
+			if (t >= knot [k] && t < knot [k + 1])
+				return 1;
+			else
+				return 0;
+		}
 
-			if ((knot [k + p] - knot [k]) == 0)
+		if (p > 0) {
+			double evalm1;
+			double eval1;
+
+			if ((knot [k + p] - knot [k]) == 0.0)
 				evalm1 = 0;
-			if ((knot [k + p + 1] - knot [k + 1]) == 0)
+			else 
+				evalm1 = ((t - knot [k]) / (knot [k + p] - knot [k])) * EvalNkp (k, p - 1, t);
+			
+			if ((knot [k + p + 1] - knot [k + 1]) == 0.0)
 				eval1 = 0;
+			else
+				eval1 = ((knot [p + k + 1] - t) / (knot [k + p + 1] - knot [k + 1])) * EvalNkp (k + 1, p - 1, t);
 
 			res = evalm1 + eval1;
 		}
-		else if (t >= knot[k] && t < knot[k+1])
-			res = 1;
 
 		return res;
 	}
