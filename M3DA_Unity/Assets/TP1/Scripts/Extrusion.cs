@@ -15,7 +15,7 @@ public class Extrusion : MonoBehaviour {
 		mesh.name = "Extrude";
 
 
-		//path.setCircle(2);
+		path.setCircle(2);
 		//section.setCircle(1);
 	}
 	
@@ -29,6 +29,8 @@ public class Extrusion : MonoBehaviour {
 		List<Vector3> sectionPos = section.getPositions();
 		position = new Vector3[pathPos.Count * sectionPos.Count];
 		int index = 0;
+
+
 
 		for (int i = 0; i < pathPos.Count; i++) {
 			Quaternion q = Quaternion.FromToRotation (Vector3.up, path.tangentLine(i));
@@ -49,6 +51,7 @@ public class Extrusion : MonoBehaviour {
 		List<Vector3> sectionPos = section.getPositions();
 		position = new Vector3[stack * sectionPos.Count];
 		int index = 0;
+		Vector3[] normals = new Vector3[stack * sectionPos.Count];
 
 		for (int i = 0; i < stack; i++) {
 			Quaternion q = Quaternion.FromToRotation (Vector3.up, path.TangentSpline(i*1.0f / (stack*1.0f)));
@@ -56,6 +59,10 @@ public class Extrusion : MonoBehaviour {
 				Vector3 nSec = new Vector3(sectionPos[j].x, 0, sectionPos[j].y);
 				Vector3 nSectionPos = q * nSec;
 				Vector3 pos = nSectionPos + path.PointSpline(i*1.0f / (stack*1.0f));
+
+				Vector3 n = section.Normale (j);
+
+				normals [index] = n;
 				position [index] = pos;
 				index++;
 			}
@@ -91,6 +98,7 @@ public class Extrusion : MonoBehaviour {
 		mesh.Clear ();
 		mesh.vertices = position;
 		mesh.triangles = triangles.ToArray();
+		mesh.normals = normals;
 	}
 
 	void initTriangle() {
