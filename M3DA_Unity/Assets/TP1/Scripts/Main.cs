@@ -48,5 +48,16 @@ public class Main : MonoBehaviour {
 			if (section.activeSelf)
 				sectionLine.addPosition (pos);
 		}
+
+		if (Input.GetKeyDown(KeyCode.X)) {
+			if(path.activeSelf)
+				pathLine.clearPositions();
+			else if (section.activeSelf)
+				sectionLine.clearPositions();
+			else {
+				pathLine.clearPositions();
+				sectionLine.clearPositions();
+			}
+		}
 	}
 }
