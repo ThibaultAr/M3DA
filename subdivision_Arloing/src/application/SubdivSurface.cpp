@@ -93,6 +93,13 @@ void SubdivSurface::computePointFace() {
    * - _input->positionMesh(i,j) : the position of the j-th vertex of the i-th face
    */
   _pointFace.clear();
+  _pointFace.resize(_input->nbFace());
+
+  for (int i = 0; i < _input->nbFace(); ++i) {
+      for (int j = 0; j < _input->nbVertexFace(i); ++j) {
+          _pointFace[i] += _input->positionVertexFace(i,j);
+      }
+  }
 
 }
 
@@ -106,6 +113,17 @@ void SubdivSurface::computePointEdge() {
    */
   _pointEdge.clear();
 
+  for (int i = 0; i < _edge.size(); ++i) {
+
+      int vertexGauche = _edge[i]._a;
+      int vertexDroite = _edge[i]._b;
+
+      int faceGauche = _edge[i]._left;
+      int faceDroite = _edge[i]._right;
+
+      _pointEdge.push_back((_input->positionMesh(vertexGauche) + _input->positionMesh(vertexDroite)
+                            + _pointFace[faceGauche] + _pointFace[faceDroite]) / 4.0);
+  }
 }
 
 
@@ -115,7 +133,36 @@ void SubdivSurface::computePointVertex() {
    * - _edgeOfVertex[i][j] : gives the index (for the vector _edge) of the j-th edge of the i-th vertex
    */
   _pointVertex.clear();
+  _pointVertex.resize(_input->nbPosition());
 
+  Vector3 sommeE;
+  Vector3 sommeF;
+
+  for (int i = 0; i < _input->nbPosition(); ++i) {
+      sommeE = Vector3(0,0,0);
+      sommeF = Vector3(0,0,0);
+
+      double nbEdge = _edgeOfVertex[i].size();
+
+      for(int j = 0; j < _edgeOfVertex[i].size(); ++j) {
+          //somme des aretes pour le i eme point de face
+          int edge = _edgeOfVertex[i][j];
+          sommeE += _pointEdge[edge];
+
+          //somme des faces pour le i eme point de face
+          //doit etre unique, j'utilise un set pour avoir que des vals uniques (int)
+          sommeF += _pointFace[_edge[edge]._right];
+          sommeF += _pointFace[_edge[edge]._left];
+      }
+
+      //http://www.lifl.fr/~grisoni/IVI/Cours2Subdiv.pdf
+      //slide catmul clark en haut a droite
+      Vector3 pointPrec = (nbEdge-2)/nbEdge*_input->positionMesh(i);
+      sommeE /= nbEdge*nbEdge;
+      sommeF /= nbEdge*nbEdge;
+
+      _pointVertex.push_back(pointPrec + sommeE + sommeF);
+  }
 }
 
 int SubdivSurface::findNextEdge(int i,int j) {
@@ -132,7 +179,39 @@ void SubdivSurface::buildMesh() {
    *
    */
 
+  for(int i = 0; i < _pointFace.size(); i++){
+      m->addPositionMesh(_pointFace[i]);
+  }
+  for(int i = 0; i < _pointEdge.size(); i++){
+      m->addPositionMesh(_pointEdge[i]);
+  }
+  for(int i = 0; i < _pointVertex.size(); i++){
+      m->addPositionMesh(_pointVertex[i]);
+  }
 
+  int offsetEdge = _pointFace.size();
+  int offsetVertex = _pointFace.size() + _pointEdge.size();
+  int ip,ie1,ie2,iface;
+
+  for(int i = 0; i < _pointVertex.size(); i++){// pour chaque sommet
+      ip = i + offsetVertex;
+      for(int j = 0; j < _edgeOfVertex[i].size(); j++){ // pour chaque arete
+          ie1 = _edgeOfVertex[i][j] + offsetEdge;
+          if(_input->positionMesh(i) == _input->positionMesh(_edge[_edgeOfVertex[i][j]]._b)){
+              iface = _edge[_edgeOfVertex[i][j]]._left;
+          } else{
+              iface = _edge[_edgeOfVertex[i][j]]._right;
+          }
+
+          for(int k = 0; k <_edgeOfVertex[i].size(); k++){ // on cherche l'arete incidente qui partage la face
+              if(k != j && (iface == _edge[_edgeOfVertex[i][k]]._left || iface == _edge[_edgeOfVertex[i][k]]._right)){
+                  ie2=_edgeOfVertex[i][k] + offsetEdge;
+                  break;
+              }
+          }
+          m->addFaceMesh({ip,ie1,iface,ie2});
+      }
+  }
   /* end TODO */
 
 
