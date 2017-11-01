@@ -93,12 +93,14 @@ void SubdivSurface::computePointFace() {
    * - _input->positionMesh(i,j) : the position of the j-th vertex of the i-th face
    */
   _pointFace.clear();
-  _pointFace.resize(_input->nbFace());
 
   for (int i = 0; i < _input->nbFace(); ++i) {
+      p3d::Vector3 vect = Vector3(0,0,0);
       for (int j = 0; j < _input->nbVertexFace(i); ++j) {
-          _pointFace[i] += _input->positionVertexFace(i,j);
+          vect += _input->positionVertexFace(i,j);
       }
+
+      _pointFace.push_back(vect / _input->nbVertexFace(i));
   }
 
 }
@@ -113,7 +115,7 @@ void SubdivSurface::computePointEdge() {
    */
   _pointEdge.clear();
 
-  for (int i = 0; i < _edge.size(); ++i) {
+  for (unsigned int i = 0; i < _edge.size(); ++i) {
 
       int vertexGauche = _edge[i]._a;
       int vertexDroite = _edge[i]._b;
@@ -122,7 +124,7 @@ void SubdivSurface::computePointEdge() {
       int faceDroite = _edge[i]._right;
 
       _pointEdge.push_back((_input->positionMesh(vertexGauche) + _input->positionMesh(vertexDroite)
-                            + _pointFace[faceGauche] + _pointFace[faceDroite]) / 4.0);
+                            + _pointFace[faceGauche] + _pointFace[faceDroite]) / 4);
   }
 }
 
@@ -133,31 +135,32 @@ void SubdivSurface::computePointVertex() {
    * - _edgeOfVertex[i][j] : gives the index (for the vector _edge) of the j-th edge of the i-th vertex
    */
   _pointVertex.clear();
-  _pointVertex.resize(_input->nbPosition());
 
   Vector3 sommeE;
   Vector3 sommeF;
 
-  for (int i = 0; i < _input->nbPosition(); ++i) {
+  for (unsigned int i = 0; i < _input->nbPosition(); ++i) {
       sommeE = Vector3(0,0,0);
       sommeF = Vector3(0,0,0);
 
       double nbEdge = _edgeOfVertex[i].size();
 
-      for(int j = 0; j < _edgeOfVertex[i].size(); ++j) {
+      for(unsigned int j = 0; j < _edgeOfVertex[i].size(); ++j) {
           //somme des aretes pour le i eme point de face
           int edge = _edgeOfVertex[i][j];
           sommeE += _pointEdge[edge];
 
           //somme des faces pour le i eme point de face
-          //doit etre unique, j'utilise un set pour avoir que des vals uniques (int)
-          sommeF += _pointFace[_edge[edge]._right];
-          sommeF += _pointFace[_edge[edge]._left];
+          if(_edge[edge]._a == i)
+            sommeF += _pointFace[_edge[edge]._left];
+          else
+            sommeF += _pointFace[_edge[edge]._right];
+
       }
 
       //http://www.lifl.fr/~grisoni/IVI/Cours2Subdiv.pdf
       //slide catmul clark en haut a droite
-      Vector3 pointPrec = (nbEdge-2)/nbEdge*_input->positionMesh(i);
+      Vector3 pointPrec = (nbEdge-2)*_input->positionMesh(i)/nbEdge;
       sommeE /= nbEdge*nbEdge;
       sommeF /= nbEdge*nbEdge;
 
@@ -212,8 +215,8 @@ void SubdivSurface::buildMesh() {
           m->addFaceMesh({ip,ie1,iface,ie2});
       }
   }
-  /* end TODO */
 
+  /* end TODO */
 
   _result=m;
   _result->computeNormal();
