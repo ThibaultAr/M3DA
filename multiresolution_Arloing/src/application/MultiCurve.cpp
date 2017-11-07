@@ -141,11 +141,6 @@ void MultiCurve::analysisStep() {
   vector<Vector3> coarse;
   coarse.resize(n/2); // coarse will contain the previous level
 
-
-  /* TODO : set the vector coarse and _detail[level] to represent the level curve from level+1
-   * use _currentCurve (contains the points of the current level+1)
-   */
-
   coarse.clear();
   int nlevel = pow(2.0, level);
   for(int j = 0; j < nlevel; j++) {
@@ -166,9 +161,6 @@ void MultiCurve::analysisStep() {
       _detail[level].push_back(res);
   }
 
-
-  /* end TODO
-   */
   _currentCurve=coarse; // _currentCurve is now the previous level
 }
 
