@@ -119,15 +119,28 @@ void MultiCurve::synthesisStep() {
   int n=_currentCurve.size();
   int level=log2(n);
   vector<Vector3> finer;
-  /* TODO : set the vector finer to represent the level+1 curve from the level curve
-   * use _currentCurve (contains the points of the current level) and _detail[level] (the detail coefficients).
-   */
+
   finer.resize(n*2); // finer will contain next level
 
+  finer.clear();
 
+  int nlevel = pow(2.0, level + 1);
+  for(int j = 0; j < nlevel; j++) {
+      Vector3 pj =_currentCurve[j/2 %n];
+      Vector3 pj1 = _currentCurve[( n + j/2 -1) %n];
+      Vector3 dj = _detail[level][j/2 %n];
+      Vector3 dj1 = _detail[level][(n + j/2 -1) %n];
 
-  /* end TODO
-   */
+      Vector3 p1 = pj1 + dj1;
+      Vector3 p = pj - dj;
+
+      if(j % 2 == 0)
+        finer.push_back((3.0/4.0) * p1 + (1.0/4.0) * p);
+      else
+        finer.push_back((1.0/4.0) * p1 + (3.0/4.0) * p);
+
+  }
+
   _currentCurve=finer; // _currentCurve is now the next level
 }
 
