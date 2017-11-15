@@ -27,19 +27,11 @@ public class Curve : MonoBehaviour {
 	}
 
 	double StartInterval() {
-		double res = 0.0;
-
-        res = basis.knot[basis.degree];
-
-        return res;
+        return basis.knot[basis.degree];
 	}
 
 	double EndInterval() {
-		double res = -1.0; // hack to avoid a green dot if TODO are not done.
-
-		res = basis.knot[basis.knot.Count - 1] - 0.001;
-
-		return res;
+		return basis.knot[position.Count] - 0.00001;
 	}
 
 	public void Clear() {
@@ -64,7 +56,7 @@ public class Curve : MonoBehaviour {
 	Vector3 PointCurve(double u) {
 		Vector3 result = Vector3.zero;
 
-		for(int k = 0; k < position.Count - basis.degree - 1; k++) {
+		for(int k = 0; k < position.Count; k++) {
 			result += (float)basis.EvalNkp(k, basis.degree, u) * position[k];
         }
 
@@ -73,10 +65,10 @@ public class Curve : MonoBehaviour {
 
 	public List<Vector3> DrawNurbs() {
 		List<Vector3> l=new List<Vector3>();
-		int nbPoint = 30;
+		double nbPoint = 30.0;
 
-		for (int i = 0; i < nbPoint; i++) {
-			double t = StartInterval() + (EndInterval() - StartInterval()) * ((double)i / (nbPoint -1));
+		for (int i = 0; i < 30; i++) {
+			double t = StartInterval() + (EndInterval() - StartInterval()) * ((double)i / (nbPoint -1.0));
 
 			l.Add(PointCurve(t));
 		}
