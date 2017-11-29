@@ -54,13 +54,16 @@ public class Curve : MonoBehaviour {
 	}
 
 	Vector3 PointCurve(double u) {
-		Vector3 result = Vector3.zero;
+		Vector4 result = Vector4.zero;
 
 		for(int k = 0; k < position.Count; k++) {
-			result += (float)basis.EvalNkp(k, basis.degree, u) * position[k];
+			Vector3 p = position [k] * weight [k];
+			float nkp = (float)basis.EvalNkp (k, basis.degree, u);
+			result += new Vector4 (p.x, p.y, p.z, weight [k]) * nkp;
         }
 
-		return result;
+
+		return new Vector3(result.x, result.y, result.z) / result.w;
 	}
 
 	public List<Vector3> DrawNurbs() {

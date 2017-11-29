@@ -15,7 +15,7 @@ public class Extrusion : MonoBehaviour {
 		mesh.name = "Extrude";
 
 
-		path.setCircle(2);
+		//path.setCircle(2);
 		//section.setCircle(1);
 	}
 	
