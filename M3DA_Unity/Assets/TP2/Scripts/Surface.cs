@@ -70,7 +70,19 @@ public class Surface : MonoBehaviour {
 	public Vector3 PointSurface(double u,double v) {
 		Vector3 result=Vector3.zero;
 		float w=0.0f;
-		/* TODO : set result */
+
+        int degreeU = basisU.degree;
+        int degreeV = basisV.degree;
+
+        for(int i = 0; i < nbControlV; i++)
+        {
+            Vector3 pU = new Vector3(0f, 0f, 0f);
+            for(int j = 0; j < nbControlU; j++)
+            {
+                pU += (float)basisU.EvalNkp(j, degreeU, u) * position[i*nbControlU + j];
+            }
+            result += (float)basisV.EvalNkp(i, degreeV, v) * pU;
+        }
 
 		return result; // * 1.0f / (float)w;
 	}
