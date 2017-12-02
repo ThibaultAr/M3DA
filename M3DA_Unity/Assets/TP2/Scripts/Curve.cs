@@ -14,7 +14,8 @@ public class Curve : MonoBehaviour {
 		position = new List<Vector3> ();
 		weight = new List<float> ();
 		basis = GameObject.Find ("BasisU").GetComponent<Basis> ();
-		SetSegment ();
+        //SetSegment ();
+        setCircle();
 		basis.SetFromControlCount (position.Count);
 	}
 
@@ -52,6 +53,30 @@ public class Curve : MonoBehaviour {
 		Add (new Vector3 (0, 0.8f, 0));
 		Add (new Vector3 (0.6f, 0.5f, 0));
 	}
+
+    public void Add(Vector3 pos, float w)
+    {
+        position.Add(pos);
+        weight.Add(w);
+        basis.SetFromControlCount(position.Count);
+    }
+
+    public void setCircle()
+    {
+        Clear();
+
+        Add(new Vector3(0f, -0.5f, 0f), 1.0f);
+        Add(new Vector3(-0.5f, -0.5f, 0f), Mathf.Cos(1.0472f));
+        Add(new Vector3(-0.25f, 0f, 0f), 1.0f);
+        Add(new Vector3(0f, 0.5f, 0f), Mathf.Cos(1.0472f));
+        Add(new Vector3(0.25f, 0f, 0f), 1.0f);
+        Add(new Vector3(0.5f, -0.5f, 0f), Mathf.Cos(1.0472f));
+        Add(new Vector3(0f, -0.5f, 0f), 1.0f);
+
+        basis.degree = 2;
+
+        basis.knot = new List<double> { 0.0, 0.0, 0.0, 1.0 / 3.0, 1.0 / 3.0, 2.0 / 3.0, 2.0 / 3.0, 1.0, 1.0, 1.0 };
+    }
 
 	Vector3 PointCurve(double u) {
 		Vector4 result = Vector4.zero;
