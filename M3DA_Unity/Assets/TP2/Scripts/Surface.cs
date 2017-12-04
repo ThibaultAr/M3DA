@@ -18,8 +18,8 @@ public class Surface : MonoBehaviour {
 		weight = new List<float> ();
 		basisU = GameObject.Find ("BasisU").GetComponent<Basis> ();
 		basisV = GameObject.Find ("BasisV").GetComponent<Basis> ();
-		//SetGrid ();  // TODO : or SetRevolution
-        setRevolution();
+		SetGrid ();  // TODO : or SetRevolution
+        //setRevolution();
 		basisU.SetFromControlCount (nbControlU);
 		basisV.SetFromControlCount (nbControlV);
 	}
@@ -84,7 +84,7 @@ public class Surface : MonoBehaviour {
 
 
     public Vector3 PointSurface(double u,double v) {
-		Vector3 result=Vector3.zero;
+		Vector4 result=Vector4.zero;
 		float w=0.0f;
 
         int degreeU = basisU.degree;
@@ -92,15 +92,17 @@ public class Surface : MonoBehaviour {
 
         for(int i = 0; i < nbControlV; i++)
         {
-            Vector3 pU = new Vector3(0f, 0f, 0f);
+            Vector4 pU = new Vector4(0f, 0f, 0f, 0f);
             for(int j = 0; j < nbControlU; j++)
             {
-                pU += (float)basisU.EvalNkp(j, degreeU, u) * position[i*nbControlU + j];
+				float nkp = (float)basisU.EvalNkp (j, degreeU, u)  * weight[i*nbControlU + j];
+				Vector3 tmp = nkp * position[i*nbControlU + j];
+				pU += new Vector4 (tmp.x, tmp.y, tmp.z, nkp);
             }
             result += (float)basisV.EvalNkp(i, degreeV, v) * pU;
         }
 
-		return result; // * 1.0f / (float)w;
+		return new Vector3(result.x, result.y, result.z) / result.w; // * 1.0f / (float)w;
 	}
 
 	// Update is called once per frame

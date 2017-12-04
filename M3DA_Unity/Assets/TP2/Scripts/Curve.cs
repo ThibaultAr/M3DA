@@ -106,5 +106,6 @@ public class Curve : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		basis.SetFromControlCount (position.Count);
 	}
 }
