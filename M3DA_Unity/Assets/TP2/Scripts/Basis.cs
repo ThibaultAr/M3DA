@@ -37,7 +37,6 @@ public class Basis: MonoBehaviour {
 		Debug.Log (nb);
 
 		knot.Clear();
-		this.degree = 2;
 		for (int i = 0; i < nb; i++) {
 			knot.Add ((double)i/nb);
 		}
@@ -48,7 +47,6 @@ public class Basis: MonoBehaviour {
 		Debug.Log (nb);
 
 		knot.Clear ();
-		this.degree = 2;
 
 		for (int i = 0; i < degree; i++)
 			knot.Add (0.0);
