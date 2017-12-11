@@ -18,8 +18,8 @@ public class Surface : MonoBehaviour {
 		weight = new List<float> ();
 		basisU = GameObject.Find ("BasisU").GetComponent<Basis> ();
 		basisV = GameObject.Find ("BasisV").GetComponent<Basis> ();
-		SetGrid ();  // TODO : or SetRevolution
-        //setRevolution();
+		//SetGrid ();  // TODO : or SetRevolution
+        setRevolution();
 		basisU.SetFromControlCount (nbControlU);
 		basisV.SetFromControlCount (nbControlV);
 	}
@@ -68,18 +68,31 @@ public class Surface : MonoBehaviour {
 
     public void setRevolution()
     {
+		position.Clear ();
         nbControlU = 5;
         nbControlV = 4;
         float stepTheta = 360f / nbControlV;
         float theta = stepTheta;
-        for(int slice=nbControlU; slice<nbControlU*nbControlV; slice+=nbControlU)
+		float stepV=2.0f/(nbControlV-1);
+
+		float v = 0;
+		float u = -1;
+
+		float r;
+		float angle = 0.0f;
+
+		for(int i=0; i<nbControlV; i++)
         {
-            for (int stack = 0; stack < nbControlU; stack++)
+			r = Random.Range (0.5f, 2.0f);
+            for (int j=0; j < nbControlU; j++)
             {
-                position[slice + stack] = new Quaternion(theta, 0f, 1f, 0f) * position[stack];
+				position.Add(new Vector3(r*Mathf.Cos(Mathf.Deg2Rad*angle), r*Mathf.Sin(Mathf.Deg2Rad * angle), v));
+				weight.Add (1);
+				angle += stepTheta;
             }
-            theta += stepTheta;
-        }
+			angle = 0.0f;
+			v += stepV;
+		}
     }
 
 
